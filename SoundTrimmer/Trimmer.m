@@ -6,7 +6,6 @@
 
 @implementation Trimmer {
     AVAssetWriter *_writer;
-    AVAssetWriterInput *_input;
 }
 
 - (void)trim {
@@ -105,56 +104,55 @@
     assert(status == 0);
     status = CMSampleBufferCreate(NULL, outputBuffer, YES, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, &sampleBuffer);
     assert(status == 0);
+    CFRelease(outputBuffer);
 
     outputSettings =
     @{ AVFormatIDKey: @(kAudioFormatMPEG4AAC),
        AVSampleRateKey: @(sampleRate),
-       AVNumberOfChannelsKey: @(channelCount),
-//       AVLinearPCMBitDepthKey: @(16),
-//       AVLinearPCMIsBigEndianKey: @(NO),
-//       AVLinearPCMIsFloatKey: @(NO),
-//       AVLinearPCMIsNonInterleaved: @(NO),
-//       AVLinearPCMBitDepthKey: @(6),
-       };
+       AVNumberOfChannelsKey: @(channelCount) };
 
-    // public.mpeg-4, public.3gpp, com.apple.coreaudio-format, com.apple.quicktime-movie,
-    // com.apple.m4a-audio, com.apple.m4v-video, org.3gpp.adaptive-multi-rate-audio,
-    // public.aiff-audio, com.microsoft.waveform-audio, public.aifc-audio
     AVAssetWriter *writer = [AVAssetWriter assetWriterWithURL:_outputURL
-                                                     fileType:@"com.apple.m4a-audio"//"com.microsoft.waveform-audio"
+                                                     fileType:@"com.apple.m4a-audio"
                                                         error:nil];
-    
-    AVAssetWriterInput *input = [[AVAssetWriterInput alloc] initWithMediaType:AVMediaTypeAudio outputSettings:outputSettings];
-    
-    
-//     = [[AVAssetWriterInput alloc] assetWriterInputWithMediaType:AVMediaTypeAudio
- //                                                                  outputSettings:outputSettings];
-    
-//    [writer addInput:input];
-    input.expectsMediaDataInRealTime = YES;
-    if ([writer canAddInput:input])
-        [writer addInput:input];
-    
-    NSLog(@"----");
-    NSLog(writer.error);
-    NSLog(@"----");
-//    NSLog(input.error);
-
-    
-    [writer startWriting];
-    [writer startSessionAtSourceTime:kCMTimeZero];
-    
-    
-    Boolean x = [input isReadyForMoreMediaData]; // <- fails
-
-    [input appendSampleBuffer:sampleBuffer];
-    CFRelease(sampleBuffer);
-    CFRelease(outputBuffer);
-
-    [input markAsFinished];
+    AVAssetWriterInput *input = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio
+                                                                   outputSettings:outputSettings];
+    [input setExpectsMediaDataInRealTime:YES];
+    if ([writer canAddInput:input]) [writer addInput:input];
 
     _writer = writer;
-    _input = input;
+
+    [writer startWriting];
+    [writer startSessionAtSourceTime:kCMTimeZero];
+    [input appendSampleBuffer:sampleBuffer];
+    [input markAsFinished];
+
+    [writer finishWritingWithCompletionHandler:^{
+        [self didFinishTrimming];
+    }];
+}
+
+- (void)didFinishTrimming {
+    if ([_delegate respondsToSelector:@selector(trimmerDidFinishTrimming:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_delegate trimmerDidFinishTrimming:self];
+        });
+    }
+}
+
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (object != _writer) {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+        return;
+    }
+
+    if ([keyPath isEqualToString:@"status"]) {
+        if ([_writer status] == AVAssetWriterStatusCompleted) {
+            [_writer removeObserver:self forKeyPath:keyPath];
+            [self didFinishTrimming];
+        }
+        // TODO: Handle writer errors.
+    }
 }
 
 @end

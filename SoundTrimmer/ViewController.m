@@ -2,7 +2,12 @@
 #import "DSWaveformImage.h"
 #import "Trimmer.h"
 
+@interface ViewController () <TrimmerDelegate> @end
+
 @implementation ViewController {
+    NSURL *_sampleSoundURL;
+    NSURL *_outputURL;
+    
     AVAudioPlayer *_player;
     Trimmer *_trimmer;
 
@@ -11,16 +16,20 @@
 }
 
 - (NSURL *)sampleSoundURL {
+    if (_sampleSoundURL) { return _sampleSoundURL; }
+
     NSBundle *mainBundle = [NSBundle mainBundle];
     NSString *samplePath = [mainBundle pathForResource:@"sample" ofType:@"aac"];
-    return [NSURL fileURLWithPath:samplePath];
+    return _sampleSoundURL = [NSURL fileURLWithPath:samplePath];
 }
 
 - (NSURL *)outputURL {
+    if (_outputURL) { return _outputURL; }
+
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *path = [paths objectAtIndex:0];
-    path = [path stringByAppendingPathComponent:@"output.wav"];
-    return [NSURL fileURLWithPath:path];
+    path = [path stringByAppendingPathComponent:@"output.aac"];
+    return _outputURL = [NSURL fileURLWithPath:path];
 }
 
 - (void)dealloc {
@@ -54,6 +63,7 @@
         if (!s) return;
 
         Trimmer *trimmer = [[Trimmer alloc] init];
+        [trimmer setDelegate:s];
         [trimmer setInputURL:[s sampleSoundURL]];
         [trimmer setOutputURL:[s outputURL]];
         [trimmer trim];
@@ -77,5 +87,15 @@
     [_player play];
 }
 
+
+- (void)trimmerDidFinishTrimming:(Trimmer *)trimmer {
+    NSLog(@"done trimming.");
+    _after = [DSWaveformImage waveformForAssetAtURL:[self outputURL]
+                                              color:[UIColor whiteColor]
+                                               size:CGSizeMake(1024, 256)
+                                              scale:1.0
+                                              style:DSWaveformStyleStripes];
+    [_afterImageView setImage:_after];
+}
 
 @end
