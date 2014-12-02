@@ -152,7 +152,6 @@
     CFRelease(outputBuffer);
 
     [input markAsFinished];
-    [writer startWriting];
 
     _writer = writer;
     _input = input;
