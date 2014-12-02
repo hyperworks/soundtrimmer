@@ -19,7 +19,7 @@
 - (NSURL *)outputURL {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *path = [paths objectAtIndex:0];
-    path = [path stringByAppendingPathComponent:@"output.aac"];
+    path = [path stringByAppendingPathComponent:@"output.wav"];
     return [NSURL fileURLWithPath:path];
 }
 

@@ -107,24 +107,45 @@
     assert(status == 0);
 
     outputSettings =
-    @{ AVFormatIDKey: @(kAudioFormatLinearPCM),
+    @{ AVFormatIDKey: @(kAudioFormatMPEG4AAC),
        AVSampleRateKey: @(sampleRate),
        AVNumberOfChannelsKey: @(channelCount),
-       AVLinearPCMBitDepthKey: @(16),
-       AVLinearPCMIsBigEndianKey: @(NO),
-       AVLinearPCMIsFloatKey: @(NO),
-       AVLinearPCMIsNonInterleaved: @(NO) };
+//       AVLinearPCMBitDepthKey: @(16),
+//       AVLinearPCMIsBigEndianKey: @(NO),
+//       AVLinearPCMIsFloatKey: @(NO),
+//       AVLinearPCMIsNonInterleaved: @(NO),
+//       AVLinearPCMBitDepthKey: @(6),
+       };
 
     // public.mpeg-4, public.3gpp, com.apple.coreaudio-format, com.apple.quicktime-movie,
     // com.apple.m4a-audio, com.apple.m4v-video, org.3gpp.adaptive-multi-rate-audio,
     // public.aiff-audio, com.microsoft.waveform-audio, public.aifc-audio
     AVAssetWriter *writer = [AVAssetWriter assetWriterWithURL:_outputURL
-                                                     fileType:@"com.microsoft.waveform-audio"
+                                                     fileType:@"com.apple.m4a-audio"//"com.microsoft.waveform-audio"
                                                         error:nil];
-    AVAssetWriterInput *input = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio
-                                                                   outputSettings:outputSettings];
-    assert([input isReadyForMoreMediaData]); // <- fails
-    [writer addInput:input];
+    
+    AVAssetWriterInput *input = [[AVAssetWriterInput alloc] initWithMediaType:AVMediaTypeAudio outputSettings:outputSettings];
+    
+    
+//     = [[AVAssetWriterInput alloc] assetWriterInputWithMediaType:AVMediaTypeAudio
+ //                                                                  outputSettings:outputSettings];
+    
+//    [writer addInput:input];
+    input.expectsMediaDataInRealTime = YES;
+    if ([writer canAddInput:input])
+        [writer addInput:input];
+    
+    NSLog(@"----");
+    NSLog(writer.error);
+    NSLog(@"----");
+//    NSLog(input.error);
+
+    
+    [writer startWriting];
+    [writer startSessionAtSourceTime:kCMTimeZero];
+    
+    
+    Boolean x = [input isReadyForMoreMediaData]; // <- fails
 
     [input appendSampleBuffer:sampleBuffer];
     CFRelease(sampleBuffer);
