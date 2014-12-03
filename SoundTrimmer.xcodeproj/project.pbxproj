@@ -17,6 +17,7 @@
 		222B0EB91A2D858200FFD483 /* Trimmer.m in Sources */ = {isa = PBXBuildFile; fileRef = 222B0EB81A2D858200FFD483 /* Trimmer.m */; };
 		222B0EBB1A2D9EA500FFD483 /* sample.aac in Resources */ = {isa = PBXBuildFile; fileRef = 222B0EBA1A2D9EA500FFD483 /* sample.aac */; };
 		222B0EBE1A2D9ED400FFD483 /* DSWaveformImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 222B0EBD1A2D9ED400FFD483 /* DSWaveformImage.m */; };
+		22917A381A2EC2A90091AA21 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22917A371A2EC2A90091AA21 /* AudioToolbox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		222B0EBA1A2D9EA500FFD483 /* sample.aac */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.aac; sourceTree = "<group>"; };
 		222B0EBC1A2D9ED400FFD483 /* DSWaveformImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSWaveformImage.h; sourceTree = "<group>"; };
 		222B0EBD1A2D9ED400FFD483 /* DSWaveformImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DSWaveformImage.m; sourceTree = "<group>"; };
+		22917A371A2EC2A90091AA21 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22917A381A2EC2A90091AA21 /* AudioToolbox.framework in Frameworks */,
 				222B0EB71A2D857100FFD483 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -53,9 +56,10 @@
 		222B0E801A2D7DF600FFD483 = {
 			isa = PBXGroup;
 			children = (
+				22917A371A2EC2A90091AA21 /* AudioToolbox.framework */,
 				222B0EB61A2D857100FFD483 /* AVFoundation.framework */,
-				222B0E8B1A2D7DF600FFD483 /* SoundTrimmer */,
 				222B0E8A1A2D7DF600FFD483 /* Products */,
+				222B0E8B1A2D7DF600FFD483 /* SoundTrimmer */,
 			);
 			sourceTree = "<group>";
 		};
@@ -312,6 +316,7 @@
 				222B0EAE1A2D7DF700FFD483 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

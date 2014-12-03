@@ -15,7 +15,6 @@
     AVAssetTrack *track = [[asset tracks] objectAtIndex:0];
 
     // Extract sample rate and channel count from track metadata.
-    UInt32 sampleRate = 0, channelCount = 0;
     NSArray *descriptions = [track formatDescriptions];
     const AudioStreamBasicDescription *description = nil;
     for (unsigned int i = 0; i < [descriptions count]; i++) {
@@ -23,13 +22,14 @@
         item = (CMAudioFormatDescriptionRef)CFBridgingRetain([descriptions objectAtIndex:i]);
 
         description = CMAudioFormatDescriptionGetStreamBasicDescription(item);
-        if (description) {
-            sampleRate = description->mSampleRate;
-            channelCount = description->mChannelsPerFrame;
-        }
     }
+    
+    assert(description);
 
     // readout entire audio data as NSData
+    Float64 sampleRate = description->mSampleRate;
+    UInt32 channelCount = description->mChannelsPerFrame;
+    
     NSDictionary *outputSettings =
     @{ AVFormatIDKey: @(kAudioFormatLinearPCM),
        AVSampleRateKey: @(sampleRate),
@@ -65,7 +65,6 @@
 
     assert(reader.status == AVAssetReaderStatusCompleted);
     assert([audioData length] > 0);
-    // TODO: Handle errorneous reader.status
 
     // find non-silence brackets
     SInt16 *voiceStartPoint, *voiceStopPoint;
@@ -74,19 +73,24 @@
     SInt16 *inSamples = (SInt16 *)[audioData mutableBytes];
     voiceStartPoint = voiceStopPoint = inSamples;
 
-    UInt32 max = [audioData length] >> 1;
-    for (int i = 0; i < max; i++, inSamples++) {
-        SInt16 amplitude = *inSamples;
-
+    UInt32 max = (UInt32)([audioData length] / channelCount);
+    for (int i = 0; i < max; i += channelCount) {
+        SInt16 *frameStart = inSamples;
+        
+        SInt16 sum = 0;
+        for (int j = 0; j < channelCount; j++) {
+            sum += *inSamples++;
+        }
+        
         if (!voiceBegan) {
-            if (IS_NOISE(amplitude)) {
-                voiceStartPoint = inSamples;
+            if (IS_NOISE(sum)) {
+                voiceStartPoint = frameStart;
             } else {
                 voiceBegan = true;
             }
         } else {
-            if (IS_NOISE(amplitude)) {
-                voiceStopPoint = inSamples;
+            if (IS_NOISE(sum)) {
+                voiceStopPoint = frameStart;
             }
         }
     }
@@ -94,18 +98,23 @@
     // TODO: Pad with silence so there's a small aesthetical pause between sounds.
 
     // copy out non-silenced parts
-    UInt32 voiceLength = voiceStopPoint - voiceStartPoint + 1;
+    UInt32 voiceLength = (UInt32)(voiceStopPoint - voiceStartPoint + 1);
+    voiceLength = (UInt32)[audioData length];
     CMBlockBufferRef outputBuffer = nil;
     CMSampleBufferRef sampleBuffer = nil;
     OSStatus status = 0;
+    
+    UInt32 samplesCount = voiceLength >> 1; // since we're using 16bit samples.
+    size_t sampleSize = 2;
 
     // TODO: Properly align to sample boundary?
-    status = CMBlockBufferCreateWithMemoryBlock(NULL, voiceStartPoint, voiceLength, NULL, NULL, 0, voiceLength, 0, &outputBuffer);
+    status = CMBlockBufferCreateEmpty(NULL, 0, 0, &outputBuffer);
     assert(status == 0);
-    status = CMSampleBufferCreate(NULL, outputBuffer, YES, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, &sampleBuffer);
+    status = CMBlockBufferAppendMemoryBlock(outputBuffer, voiceStartPoint, voiceLength, kCFAllocatorNull, NULL, 0, voiceLength, 0);
     assert(status == 0);
-    CFRelease(outputBuffer);
-
+    status = CMSampleBufferCreate(kCFAllocatorDefault, outputBuffer, true, NULL, NULL, NULL, samplesCount, 0, NULL, 1, &sampleSize, &sampleBuffer);
+    assert(status == 0);
+    
     outputSettings =
     @{ AVFormatIDKey: @(kAudioFormatLinearPCM),
        AVSampleRateKey: @(sampleRate),
@@ -114,23 +123,33 @@
        AVLinearPCMIsBigEndianKey: @(NO),
        AVLinearPCMIsFloatKey: @(NO),
        AVLinearPCMIsNonInterleaved: @(NO) };
+    
 
     AVAssetWriter *writer = [AVAssetWriter assetWriterWithURL:_outputURL
                                                      fileType:@"com.microsoft.waveform-audio"
                                                         error:nil];
     AVAssetWriterInput *input = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio
                                                                    outputSettings:outputSettings];
-    [input setExpectsMediaDataInRealTime:YES];
-    if ([writer canAddInput:input]) [writer addInput:input];
+    [input setExpectsMediaDataInRealTime:NO];
+    assert([writer canAddInput:input]);
+    [writer addInput:input];
 
     _writer = writer;
 
     [writer startWriting];
     [writer startSessionAtSourceTime:kCMTimeZero];
-    [input appendSampleBuffer:sampleBuffer];
+    
+    BOOL result = [input appendSampleBuffer:sampleBuffer];
+    assert(result);
+    
     [input markAsFinished];
-
     [writer finishWritingWithCompletionHandler:^{
+        assert([writer status] == AVAssetWriterStatusCompleted);
+        
+        NSFileManager *mgr = [NSFileManager defaultManager];
+        NSDictionary *attributes = [mgr attributesOfItemAtPath:[_outputURL path] error:nil];
+        NSLog(@"output size: %@", [attributes objectForKey:NSFileSize]);
+        
         [self didFinishTrimming];
     }];
 }

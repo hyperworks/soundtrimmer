@@ -27,7 +27,7 @@
     if (_outputURL) { return _outputURL; }
 
     NSString *filename = [[NSUUID UUID] UUIDString];
-    filename = [filename stringByAppendingString:@".wav"];
+    filename = [filename stringByAppendingString:@".aac"];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *path = [paths objectAtIndex:0];
