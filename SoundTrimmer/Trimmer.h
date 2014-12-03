@@ -1,14 +1,14 @@
 @import AVFoundation;
 
-@class Trimmer;
+@protocol Trimmer;
 
 @protocol TrimmerDelegate <NSObject>
 
-- (void)trimmerDidFinishTrimming:(Trimmer *)trimmer;
+- (void)trimmerDidFinishTrimming:(id<Trimmer>)trimmer;
 
 @end
 
-@interface Trimmer: NSObject
+@protocol Trimmer <NSObject>
 
 @property (nonatomic, weak) id<TrimmerDelegate> delegate;
 

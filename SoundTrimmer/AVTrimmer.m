@@ -1,12 +1,14 @@
-#import "Trimmer.h"
+#import "AVTrimmer.h"
 
 #define IS_NOISE(amplitude) (amplitude > 10.0)
 
-@implementation Trimmer {
+@implementation AVTrimmer {
     AVAssetWriter *_writer;
 }
 
 - (void)trim {
+    NSURL *_inputURL = [self inputURL];
+    NSURL *_outputURL = [self outputURL];
     assert(_inputURL && _outputURL);
     NSLog(@"input url: %@", _inputURL);
     NSLog(@"output url: %@", _outputURL);
@@ -116,17 +118,12 @@
     assert(status == 0);
     
     outputSettings =
-    @{ AVFormatIDKey: @(kAudioFormatLinearPCM),
+    @{ AVFormatIDKey: @(kAudioFormatMPEG4AAC),
        AVSampleRateKey: @(sampleRate),
-       AVNumberOfChannelsKey: @(channelCount),
-       AVLinearPCMBitDepthKey: @(16),
-       AVLinearPCMIsBigEndianKey: @(NO),
-       AVLinearPCMIsFloatKey: @(NO),
-       AVLinearPCMIsNonInterleaved: @(NO) };
-    
+       AVNumberOfChannelsKey: @(channelCount) };
 
     AVAssetWriter *writer = [AVAssetWriter assetWriterWithURL:_outputURL
-                                                     fileType:@"com.microsoft.waveform-audio"
+                                                     fileType:@"com.apple.m4a-audio"
                                                         error:nil];
     AVAssetWriterInput *input = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio
                                                                    outputSettings:outputSettings];
@@ -152,14 +149,6 @@
         
         [self didFinishTrimming];
     }];
-}
-
-- (void)didFinishTrimming {
-    if ([_delegate respondsToSelector:@selector(trimmerDidFinishTrimming:)]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_delegate trimmerDidFinishTrimming:self];
-        });
-    }
 }
 
 

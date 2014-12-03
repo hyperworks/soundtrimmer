@@ -1,6 +1,6 @@
 #import "ViewController.h"
 #import "DSWaveformImage.h"
-#import "Trimmer.h"
+#import "AVTrimmer.h"
 
 @interface ViewController () <TrimmerDelegate> @end
 
@@ -9,10 +9,20 @@
     NSURL *_outputURL;
     
     AVAudioPlayer *_player;
-    Trimmer *_trimmer;
+    id<Trimmer> _trimmer;
 
     UIImage *_before;
     UIImage *_after;
+}
+
+- (id<Trimmer>)trimmer {
+    if (_trimmer) return _trimmer;
+    
+    id<Trimmer> t = [[AVTrimmer alloc] init];
+    [t setDelegate:self];
+    [t setInputURL:[self sampleSoundURL]];
+    [t setOutputURL:[self outputURL]];
+    return _trimmer = t;
 }
 
 - (NSURL *)sampleSoundURL {
@@ -27,7 +37,7 @@
     if (_outputURL) { return _outputURL; }
 
     NSString *filename = [[NSUUID UUID] UUIDString];
-    filename = [filename stringByAppendingString:@".aac"];
+    filename = [filename stringByAppendingString:@".m4a"];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *path = [paths objectAtIndex:0];
@@ -62,16 +72,7 @@
 
     __weak typeof(self) self_ = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        typeof(self) s = self_;
-        if (!s) return;
-
-        Trimmer *trimmer = [[Trimmer alloc] init];
-        [trimmer setDelegate:s];
-        [trimmer setInputURL:[s sampleSoundURL]];
-        [trimmer setOutputURL:[s outputURL]];
-        [trimmer trim];
-
-        s->_trimmer = trimmer;
+        [[self_ trimmer] trim];
     });
 }
 
@@ -99,7 +100,7 @@
 }
 
 
-- (void)trimmerDidFinishTrimming:(Trimmer *)trimmer {
+- (void)trimmerDidFinishTrimming:(id<Trimmer>)trimmer {
     NSLog(@"done trimming.");
     _after = [DSWaveformImage waveformForAssetAtURL:[self outputURL]
                                               color:[UIColor whiteColor]

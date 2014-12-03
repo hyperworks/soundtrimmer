@@ -14,11 +14,23 @@
 		222B0E9D1A2D7DF600FFD483 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 222B0E9B1A2D7DF600FFD483 /* LaunchScreen.xib */; };
 		222B0EB31A2D825900FFD483 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 222B0EB21A2D825900FFD483 /* ViewController.m */; };
 		222B0EB71A2D857100FFD483 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222B0EB61A2D857100FFD483 /* AVFoundation.framework */; };
-		222B0EB91A2D858200FFD483 /* Trimmer.m in Sources */ = {isa = PBXBuildFile; fileRef = 222B0EB81A2D858200FFD483 /* Trimmer.m */; };
 		222B0EBB1A2D9EA500FFD483 /* sample.aac in Resources */ = {isa = PBXBuildFile; fileRef = 222B0EBA1A2D9EA500FFD483 /* sample.aac */; };
 		222B0EBE1A2D9ED400FFD483 /* DSWaveformImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 222B0EBD1A2D9ED400FFD483 /* DSWaveformImage.m */; };
 		22917A381A2EC2A90091AA21 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22917A371A2EC2A90091AA21 /* AudioToolbox.framework */; };
+		22917A411A2EDEC60091AA21 /* SOXTrimmer.m in Sources */ = {isa = PBXBuildFile; fileRef = 22917A401A2EDEC60091AA21 /* SOXTrimmer.m */; };
+		22917A441A2EE0410091AA21 /* AVTrimmer.m in Sources */ = {isa = PBXBuildFile; fileRef = 22917A431A2EE0410091AA21 /* AVTrimmer.m */; };
+		22917A471A2EE0D10091AA21 /* TrimmerBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 22917A461A2EE0D10091AA21 /* TrimmerBase.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		22917A3D1A2EDE470091AA21 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22917A391A2EDE460091AA21 /* AudioEffects.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D82C7D3516B28A53003C8B96;
+			remoteInfo = AudioEffects;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		222B0E891A2D7DF600FFD483 /* SoundTrimmer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoundTrimmer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -33,11 +45,17 @@
 		222B0EB41A2D826100FFD483 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		222B0EB51A2D854D00FFD483 /* Trimmer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Trimmer.h; sourceTree = "<group>"; };
 		222B0EB61A2D857100FFD483 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		222B0EB81A2D858200FFD483 /* Trimmer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Trimmer.m; sourceTree = "<group>"; };
 		222B0EBA1A2D9EA500FFD483 /* sample.aac */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.aac; sourceTree = "<group>"; };
 		222B0EBC1A2D9ED400FFD483 /* DSWaveformImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSWaveformImage.h; sourceTree = "<group>"; };
 		222B0EBD1A2D9ED400FFD483 /* DSWaveformImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DSWaveformImage.m; sourceTree = "<group>"; };
 		22917A371A2EC2A90091AA21 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		22917A391A2EDE460091AA21 /* AudioEffects.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioEffects.xcodeproj; path = "SoX-iPhone-Lib/AudioEffects/AudioEffects.xcodeproj"; sourceTree = "<group>"; };
+		22917A3F1A2EDEC60091AA21 /* SOXTrimmer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOXTrimmer.h; sourceTree = "<group>"; };
+		22917A401A2EDEC60091AA21 /* SOXTrimmer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOXTrimmer.m; sourceTree = "<group>"; };
+		22917A421A2EE0410091AA21 /* AVTrimmer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVTrimmer.h; sourceTree = "<group>"; };
+		22917A431A2EE0410091AA21 /* AVTrimmer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVTrimmer.m; sourceTree = "<group>"; };
+		22917A451A2EE0D10091AA21 /* TrimmerBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrimmerBase.h; sourceTree = "<group>"; };
+		22917A461A2EE0D10091AA21 /* TrimmerBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrimmerBase.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +76,7 @@
 			children = (
 				22917A371A2EC2A90091AA21 /* AudioToolbox.framework */,
 				222B0EB61A2D857100FFD483 /* AVFoundation.framework */,
+				22917A391A2EDE460091AA21 /* AudioEffects.xcodeproj */,
 				222B0E8A1A2D7DF600FFD483 /* Products */,
 				222B0E8B1A2D7DF600FFD483 /* SoundTrimmer */,
 			);
@@ -76,12 +95,17 @@
 			children = (
 				222B0EBA1A2D9EA500FFD483 /* sample.aac */,
 				222B0E901A2D7DF600FFD483 /* AppDelegate.h */,
+				22917A421A2EE0410091AA21 /* AVTrimmer.h */,
 				222B0EBC1A2D9ED400FFD483 /* DSWaveformImage.h */,
+				22917A3F1A2EDEC60091AA21 /* SOXTrimmer.h */,
 				222B0EB51A2D854D00FFD483 /* Trimmer.h */,
+				22917A451A2EE0D10091AA21 /* TrimmerBase.h */,
 				222B0EB41A2D826100FFD483 /* ViewController.h */,
 				222B0E911A2D7DF600FFD483 /* AppDelegate.m */,
+				22917A431A2EE0410091AA21 /* AVTrimmer.m */,
 				222B0EBD1A2D9ED400FFD483 /* DSWaveformImage.m */,
-				222B0EB81A2D858200FFD483 /* Trimmer.m */,
+				22917A401A2EDEC60091AA21 /* SOXTrimmer.m */,
+				22917A461A2EE0D10091AA21 /* TrimmerBase.m */,
 				222B0EB21A2D825900FFD483 /* ViewController.m */,
 				222B0E991A2D7DF600FFD483 /* Images.xcassets */,
 				222B0E9B1A2D7DF600FFD483 /* LaunchScreen.xib */,
@@ -98,6 +122,14 @@
 				222B0E8E1A2D7DF600FFD483 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		22917A3A1A2EDE460091AA21 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22917A3E1A2EDE470091AA21 /* AudioEffects.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -145,12 +177,28 @@
 			mainGroup = 222B0E801A2D7DF600FFD483;
 			productRefGroup = 222B0E8A1A2D7DF600FFD483 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 22917A3A1A2EDE460091AA21 /* Products */;
+					ProjectRef = 22917A391A2EDE460091AA21 /* AudioEffects.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				222B0E881A2D7DF600FFD483 /* SoundTrimmer */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		22917A3E1A2EDE470091AA21 /* AudioEffects.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = AudioEffects.app;
+			remoteRef = 22917A3D1A2EDE470091AA21 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		222B0E871A2D7DF600FFD483 /* Resources */ = {
@@ -171,8 +219,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				222B0EB91A2D858200FFD483 /* Trimmer.m in Sources */,
+				22917A411A2EDEC60091AA21 /* SOXTrimmer.m in Sources */,
+				22917A441A2EE0410091AA21 /* AVTrimmer.m in Sources */,
 				222B0EB31A2D825900FFD483 /* ViewController.m in Sources */,
+				22917A471A2EE0D10091AA21 /* TrimmerBase.m in Sources */,
 				222B0E921A2D7DF600FFD483 /* AppDelegate.m in Sources */,
 				222B0E8F1A2D7DF600FFD483 /* main.m in Sources */,
 				222B0EBE1A2D9ED400FFD483 /* DSWaveformImage.m in Sources */,
