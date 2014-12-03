@@ -1,8 +1,6 @@
 #import "Trimmer.h"
 
-#define MINMAX(x, min, max) MIN(max, MAX(min, x))
-#define DECIBEL(x) (20.0 * log10(ABS(x)/32767.0))
-#define NOISE_FLOOR (-50.0)
+#define IS_NOISE(amplitude) (amplitude > 10.0)
 
 @implementation Trimmer {
     AVAssetWriter *_writer;
@@ -10,6 +8,8 @@
 
 - (void)trim {
     assert(_inputURL && _outputURL);
+    NSLog(@"input url: %@", _inputURL);
+    NSLog(@"output url: %@", _outputURL);
 
     AVURLAsset *asset = [AVURLAsset assetWithURL:_inputURL];
     AVAssetTrack *track = [[asset tracks] objectAtIndex:0];
@@ -64,6 +64,7 @@
     }
 
     assert(reader.status == AVAssetReaderStatusCompleted);
+    assert([audioData length] > 0);
     // TODO: Handle errorneous reader.status
 
     // find non-silence brackets
@@ -73,19 +74,18 @@
     SInt16 *inSamples = (SInt16 *)[audioData mutableBytes];
     voiceStartPoint = voiceStopPoint = inSamples;
 
-    for (int i = 0; i < [audioData length]; i++) {
-        Float32 amplitude = (Float32)*inSamples;
-        amplitude = DECIBEL(amplitude);
-        amplitude = MINMAX(amplitude, NOISE_FLOOR, 0);
+    UInt32 max = [audioData length] >> 1;
+    for (int i = 0; i < max; i++, inSamples++) {
+        SInt16 amplitude = *inSamples;
 
         if (!voiceBegan) {
-            if (amplitude == NOISE_FLOOR) {
+            if (IS_NOISE(amplitude)) {
                 voiceStartPoint = inSamples;
             } else {
                 voiceBegan = true;
             }
         } else {
-            if (amplitude != NOISE_FLOOR) {
+            if (IS_NOISE(amplitude)) {
                 voiceStopPoint = inSamples;
             }
         }
@@ -107,12 +107,16 @@
     CFRelease(outputBuffer);
 
     outputSettings =
-    @{ AVFormatIDKey: @(kAudioFormatMPEG4AAC),
+    @{ AVFormatIDKey: @(kAudioFormatLinearPCM),
        AVSampleRateKey: @(sampleRate),
-       AVNumberOfChannelsKey: @(channelCount) };
+       AVNumberOfChannelsKey: @(channelCount),
+       AVLinearPCMBitDepthKey: @(16),
+       AVLinearPCMIsBigEndianKey: @(NO),
+       AVLinearPCMIsFloatKey: @(NO),
+       AVLinearPCMIsNonInterleaved: @(NO) };
 
     AVAssetWriter *writer = [AVAssetWriter assetWriterWithURL:_outputURL
-                                                     fileType:@"com.apple.m4a-audio"
+                                                     fileType:@"com.microsoft.waveform-audio"
                                                         error:nil];
     AVAssetWriterInput *input = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio
                                                                    outputSettings:outputSettings];

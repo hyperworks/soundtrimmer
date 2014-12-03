@@ -26,9 +26,12 @@
 - (NSURL *)outputURL {
     if (_outputURL) { return _outputURL; }
 
+    NSString *filename = [[NSUUID UUID] UUIDString];
+    filename = [filename stringByAppendingString:@".wav"];
+    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *path = [paths objectAtIndex:0];
-    path = [path stringByAppendingPathComponent:@"output.aac"];
+    path = [path stringByAppendingPathComponent:filename];
     return _outputURL = [NSURL fileURLWithPath:path];
 }
 
@@ -73,18 +76,26 @@
 }
 
 
-- (void)didTapPlayBefore {
-    if (_player) [_player stop];
+- (void)didTapPlayBefore { [self playURL:[self sampleSoundURL]]; }
+- (void)didTapPlayAfter { [self playURL:[self outputURL]]; }
 
-    _player = [[AVAudioPlayer alloc] initWithContentsOfURL:[self sampleSoundURL] error:nil];
-    [_player play];
-}
+- (void)playURL:(NSURL *)soundURL {
+    if (_player) {
+        [_player stop];
+        _player = nil;
+    }
 
-- (void)didTapPlayAfter {
-    if (_player) [_player stop];
+    NSError *err = nil;
+    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:soundURL error:&err];
+    if (err != nil) {
+        NSLog(@"%@", err);
+        _player = nil;
 
-    _player = [[AVAudioPlayer alloc] initWithContentsOfURL:[self outputURL] error:nil];
-    [_player play];
+    } else {
+        [player play];
+        _player = player;
+
+    }
 }
 
 
